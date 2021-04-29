@@ -3,6 +3,7 @@
 Exploring the relationship between mRNA and protein expression
 
 Bioinformatics Advisor - Dr. Gary Skuse -> grssbi@rit.edu
+
 Data Science Advisor - Dr. Travis Desell -> tjdvse@rit.edu
 
 
