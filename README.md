@@ -1,6 +1,4 @@
-# DSCI 601 Capstone
-
-Exploring the relationship between mRNA and protein expression
+# Exploring the relationship between mRNA and protein expression
 
 Bioinformatics Advisor - Dr. Gary Skuse -> grssbi@rit.edu
 
