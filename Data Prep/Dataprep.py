@@ -1,8 +1,10 @@
 from Bio import SeqIO
 import pandas as pd
 import numpy as np
+from numpy import argmax
+
 import DNA_Seq
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 
 
 def readingFile():
@@ -64,16 +66,22 @@ def readingFile():
                        "EPCAM":epcam_sequence, "GPD2":gpd2_sequence, "HMGA2": hmga2_sequence,
                        "KRT16":krt16_sequence, "KRT17":krt17_sequence, "LCN2":lcn2_sequence, "MTAP":mtap_sequence
                        }
+
     return input_sequences
 
 def dataEncoding(input, orf):
-    input = list(input.items())
-    data = np.array(input).reshape(-1,1)
-    encoder = OneHotEncoder(handle_unknown='ignore')
-    encoder.fit(data)
-    data_list = encoder.categories
-    encoder.transform(data).toarray()
-    print(1)
+    input = list(input.values())
+    orf_input = list(orf.values())
+    sequence = []
+    mapping = dict(zip("ACGT", range(4)))
+    for index in range(len(input)):
+        sequence = [mapping[i] for i in input[index]]
+    orf_seq = []
+    for index in range(len(orf_input)):
+        orf_seq = [mapping[ind] for ind in orf_input[index]]
+    sequence = np.eye(4)[sequence]
+    orf_seq = np.eye(4)[orf_seq]
+    return sequence, orf_seq
 def main():
     start = "ATG"
     end = "TAG, TAA, TGA"
@@ -97,6 +105,6 @@ def main():
     }
     input_sequences = {}
     input_sequences = readingFile()
-    dataEncoding(input=input_sequences, orf=Orf)
+    encoded_seq, encoded_orf = dataEncoding(input=input_sequences, orf=Orf)
 
 main()
