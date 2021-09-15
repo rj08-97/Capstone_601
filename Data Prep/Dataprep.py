@@ -5,6 +5,8 @@ from Bio.Seq import Seq
 import matplotlib.pyplot as plt
 import seaborn as sns
 from Bio import pairwise2
+from Bio.pairwise2 import format_alignment
+
 
 def readingFile():
     global avil_sequence, anxa1_sequence, bst2_sequence, cpne4_sequence, cryab_sequence, \
@@ -68,22 +70,24 @@ def readingFile():
 
     return input_sequences
 
+
 def pairwise(sequence, orf):
     sequence = list(sequence.values())
     orf = list(orf.values())
     align = []
     score = []
-    for i in range(0,len(sequence)-1):
-        align = pairwise2.align.globalxx(sequence[i], sequence[i+1])
-        seq_length = min(len(sequence[i]), len(sequence[i+1]))
+    for i in range(0, len(sequence) - 1):
+        align = pairwise2.align.globalxx(sequence[i], sequence[i + 1])
+        seq_length = min(len(sequence[i]), len(sequence[i + 1]))
         matches = align[0][2]
         score = (matches / seq_length) * 100
-
         print("The sequence similarity score is ", score)
-    print(np.array(align))
+    for index in range(len(align)):
+        print(format_alignment(*align[index]))
     return np.array(align), score
 
-def counts(sequence, start,end):
+
+def counts(sequence, start, end):
     sequence = list(sequence.values())
     stop_seq = list(end.values())
     seq = ""
@@ -99,13 +103,15 @@ def counts(sequence, start,end):
         count_TAA_sequence.append(seq.find(stop_seq[1]))
         count_TGA_sequence.append(seq.find(stop_seq[2]))
     count_stop_sequences = pd.DataFrame(
-    {'TAG': count_TAG_sequence,
-     'TAA': count_TAA_sequence,
-     'TGA': count_TGA_sequence
-    })
-    fig = sns.distplot(count_start_sequence, bins="doane",axlabel="Frequency of start and stop codon",kde=False, hist_kws={"align": "right"})
-    sns.distplot(count_stop_sequences, bins="doane",axlabel="Frequency of start and stop codon",kde=False, hist_kws={"align": "right"})
-    fig.legend(labels=['Start codons','Stop codons'])
+        {'TAG': count_TAG_sequence,
+         'TAA': count_TAA_sequence,
+         'TGA': count_TGA_sequence
+         })
+    fig = sns.distplot(count_start_sequence, bins="doane", axlabel="Frequency of start and stop codon", kde=False,
+                       hist_kws={"align": "right"})
+    sns.distplot(count_stop_sequences, bins="doane", axlabel="Frequency of start and stop codon", kde=False,
+                 hist_kws={"align": "right"})
+    fig.legend(labels=['Start codons', 'Stop codons'])
     plt.show()
 
     return count_start_sequence, count_stop_sequences
@@ -128,7 +134,7 @@ def dataEncoding(input, orf):
 
 def main():
     start = "ATG"
-    end = {1:"TAG",2: "TAA",3:" TGA"}
+    end = {1: "TAG", 2: "TAA", 3: " TGA"}
     Orf = {
         "ANXA1": "ATGGCAATGGTATCAGAATTCCTCAAGCAGGCCTGGTTTATTGAAAATGAAGAGCAGGAATATGTTCAAACTGTGAAGTCATCCAAAGGTGGTCCCGGATCAGCGGTGAGCCCCTATCCTACCTTCAATCCATCCTCGGATGTCGCTGCCTTGCATAAGGCCATAATGGTTAAAGGTGTGGATGAAGCAACCATCATTGACATTCTAACTAAGCGAAACAATGCACAGCGTCAACAGATCAAAGCAGCATATCTCCAGGAAACAGGAAAGCCCCTGGATGAAACACTGAAGAAAGCCCTTACAGGTCACCTTGAGGAGGTTGTTTTAGCTCTGCTAAAAACTCCAGCGCAATTTGATGCTGATGAACTTCGTGCTGCCATGAAGGGCCTTGGAACTGATGAAGATACTCTAATTGAGATTTTGGCATCAAGAACTAACAAAGAAATCAGAGACATTAACAGGGTCTACAGAGAGGAACTGAAGAGAGATCTGGCCAAAGACATAACCTCAGACACATCTGGAGATTTTCGGAACGCTTTGCTTTCTCTTGCTAAGGGTGACCGATCTGAGGACTTTGGTGTGAATGAAGACTTGGCTGATTCAGATGCCAGGGCCTTGTATGAAGCAGGAGAAAGG"
                  "AGAAAGGGGACAGACGTAAACGTGTTCAATACCATCCTTACCACCAGAAGCTATCCACAACTTCGCAGAGTGTTTCAGAAATACACCAAGTACAGTAAGCATGACATGAACAAAGTTCTGGACCTGGAGTTGAAAGGTGACATTGAGAAATGCCTCACAGCTATCGTGAAGTGCGCCACAAGCAAACCAGCTTTCTTTGCAGAGAAGCTTCATCAAGCCATGAAAGGTGTTGGAACTCGCCATAAGGCATTGATCAGGATTATGGTTTCCCGTTCTGAAATTGACATGAATGATATCAAAGCATTCTATCAGAAGATGTATGGTATCTCCCTTTGCCAAGCCATCCTGGATGAAACCAAAGGAGATTATGAGAAAATCCTGGTGGCTCTTTGTGGAGGAAACTAA",
@@ -151,7 +157,8 @@ def main():
     input_sequences = readingFile()
     encoded_seq, encoded_orf = dataEncoding(input=input_sequences, orf=Orf)
     counts(input_sequences, start, end)
-    alignment = pairwise(input_sequences,Orf)
-    #print(alignment)
+    alignment = pairwise(input_sequences, Orf)
+    # print(alignment)
+
 
 main()
