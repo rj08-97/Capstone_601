@@ -3,10 +3,7 @@ import pandas as pd
 import numpy as np
 from Bio.Seq import Seq
 import matplotlib.pyplot as plt
-import pydna
-import sys
-import os
-from Bio.Align import MultipleSeqAlignment
+import seaborn as sns
 from Bio import pairwise2
 
 def readingFile():
@@ -106,9 +103,9 @@ def counts(sequence, start,end):
      'TAA': count_TAA_sequence,
      'TGA': count_TGA_sequence
     })
-    plt.xlabel("Start codon")
-    plt.ylabel("Stop codon")
-    plt.plot(count_start_sequence, count_stop_sequences, color="red")
+    fig = sns.distplot(count_start_sequence, bins="doane",axlabel="Frequency of start and stop codon",kde=False, hist_kws={"align": "right"})
+    sns.distplot(count_stop_sequences, bins="doane",axlabel="Frequency of start and stop codon",kde=False, hist_kws={"align": "right"})
+    fig.legend(labels=['Start codons','Stop codons'])
     plt.show()
 
     return count_start_sequence, count_stop_sequences
@@ -153,8 +150,8 @@ def main():
     input_sequences = {}
     input_sequences = readingFile()
     encoded_seq, encoded_orf = dataEncoding(input=input_sequences, orf=Orf)
-    #counts(input_sequences, start, end)
+    counts(input_sequences, start, end)
     alignment = pairwise(input_sequences,Orf)
-    print(alignment)
+    #print(alignment)
 
 main()
