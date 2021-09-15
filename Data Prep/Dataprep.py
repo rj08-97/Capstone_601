@@ -2,11 +2,12 @@ from Bio import SeqIO
 import pandas as pd
 import numpy as np
 from Bio.Seq import Seq
-from numpy import argmax
-
-import DNA_Seq
-from sklearn.preprocessing import OneHotEncoder, LabelEncoder
-
+import matplotlib.pyplot as plt
+import pydna
+import sys
+import os
+from Bio.Align import MultipleSeqAlignment
+from Bio import pairwise2
 
 def readingFile():
     global avil_sequence, anxa1_sequence, bst2_sequence, cpne4_sequence, cryab_sequence, \
@@ -70,6 +71,20 @@ def readingFile():
 
     return input_sequences
 
+def pairwise(sequence, orf):
+    sequence = list(sequence.values())
+    orf = list(orf.values())
+    align = []
+    score = []
+    for i in range(0,len(sequence)-1):
+        align = pairwise2.align.globalxx(sequence[i], sequence[i+1])
+        seq_length = min(len(sequence[i]), len(sequence[i+1]))
+        matches = align[0][2]
+        score = (matches / seq_length) * 100
+
+        print("The sequence similarity score is ", score)
+    print(np.array(align))
+    return np.array(align), score
 
 def counts(sequence, start,end):
     sequence = list(sequence.values())
@@ -91,6 +106,10 @@ def counts(sequence, start,end):
      'TAA': count_TAA_sequence,
      'TGA': count_TGA_sequence
     })
+    plt.xlabel("Start codon")
+    plt.ylabel("Stop codon")
+    plt.plot(count_start_sequence, count_stop_sequences, color="red")
+    plt.show()
 
     return count_start_sequence, count_stop_sequences
 
@@ -134,7 +153,8 @@ def main():
     input_sequences = {}
     input_sequences = readingFile()
     encoded_seq, encoded_orf = dataEncoding(input=input_sequences, orf=Orf)
-    counts(input_sequences, start, end)
-
+    #counts(input_sequences, start, end)
+    alignment = pairwise(input_sequences,Orf)
+    print(alignment)
 
 main()
