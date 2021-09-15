@@ -131,7 +131,15 @@ def dataEncoding(input, orf):
     orf_seq = np.eye(4)[orf_seq]
     return sequence, orf_seq
 
-
+def validation(sequence):
+    dna_sequences = list(sequence.values())
+    dna_char = "ACGT"
+    for i in range(len(dna_sequences)):
+        for letter in dna_sequences[i]:
+            if letter not in dna_char:
+                print("Not a valid sequence")
+                return False
+        return True
 def main():
     start = "ATG"
     end = {1: "TAG", 2: "TAA", 3: " TGA"}
@@ -155,10 +163,11 @@ def main():
     }
     input_sequences = {}
     input_sequences = readingFile()
-    encoded_seq, encoded_orf = dataEncoding(input=input_sequences, orf=Orf)
+    validation(input_sequences)
     counts(input_sequences, start, end)
     alignment = pairwise(input_sequences, Orf)
-    # print(alignment)
+    encoded_seq, encoded_orf = dataEncoding(input=input_sequences, orf=Orf)
+
 
 
 main()
