@@ -50,3 +50,46 @@ pfm.gat1.uniprobe = new("pfm", mat=query(MotifDb, "gat1")[[3]],
                        name="GAT1-UniPROBE")
 plotMotifLogoStack(c(pfm.gat1.uniprobe, pfm.gat1.scertf, pfm.gat1.jaspar))
 
+pfm.dal80.scertf <- query(MotifDb, "dal80")[[2]]
+pcm.dal80.scertf <- round(100 * pfm.dal80.scertf)
+
+pfm.gat1.jaspar <- query(MotifDb, "gat1")[[1]]
+pcm.gat1.jaspar <- round(100 * pfm.gat1.jaspar)
+
+pfm.gat1.scertf <- query(MotifDb, "gat1")[[2]]
+pcm.gat1.scertf <- round(100 * pfm.gat1.scertf)
+
+genes <- c("DAL1", "DAL2", "DAL4", "DAL5", "DAL7", "DAL80", "GAP1")
+orfs <- as.character(mget(genes, org.Sc.sgdCOMMON2ORF))
+
+    grl <- transcriptsBy(TxDb.Scerevisiae.UCSC.sacCer3.sgdGene, by="gene") [orfs]
+
+promoter.seqs <- getPromoterSeq(grl, Scerevisiae, upstream=1000,
+                                downstream=0)
+
+pfm.dal80.scertf
+
+print (class(promoter.seqs))
+promoter.seqs <- unlist(promoter.seqs)
+print (class(promoter.seqs))
+
+matchPWM(pcm.dal80.scertf, promoter.seqs[[1]], "90%")
+
+pwm.hits <- sapply(promoter.seqs,
+                      function(pseq)
+                         matchPWM(pcm.dal80.scertf, pseq, min.score="90%"))
+
+dal80.scertf.hits <- sapply(promoter.seqs, function(pseq)
+                            matchPWM(pcm.dal80.scertf, pseq, min.score="90%"))
+gat1.scertf.hits  <- sapply(promoter.seqs, function(pseq)
+                            matchPWM(pcm.gat1.scertf, pseq, min.score="90%"))
+gat1.jaspar.hits  <- sapply(promoter.seqs, function(pseq)
+                            matchPWM(pcm.gat1.jaspar, pseq, min.score="90%"))
+
+dal80.scertf <- sapply(dal80.scertf.hits, length)
+gat1.jaspar  <- sapply(gat1.jaspar.hits,  length)
+gat1.scertf  <- sapply(gat1.scertf.hits,  length)
+
+tbl.gata     <- data.frame(gene=genes, dal80.scertf, gat1.jaspar, gat1.scertf)
+
+
