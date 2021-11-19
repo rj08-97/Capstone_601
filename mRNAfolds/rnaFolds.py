@@ -85,13 +85,13 @@ def rnaStructure(input):
         ss = s.split("\n")
         # print("RNA Structure" + "\n" + s)
     position = []
+    structure = {}
     for seq in ss:
         for mot in motif:
             if mot in seq:
                 position.append(seq[1].index(mot))
-
-        print(seq)
-
+                structure = {mot, seq[2]}
+    return structure
 
 def main():
     input_sequences = readingFile()
